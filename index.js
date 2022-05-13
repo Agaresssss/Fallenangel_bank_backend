@@ -230,9 +230,8 @@ app.post('/create',(req,res)=>{
     const password = req.body.password;
     const address = req.body.address;
     const pin = req.body.pin;
-    const role = req.body.role
     db.query("INSERT INTO `customer-identification`(prefix,fName,lName,phoneNumber,gender,dob,citizenid,email,password,address,pin,role) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
-    [prefix,fName,lName,phoneNumber,gender,dob,citizenid,email,password,address,pin,role],((err,result)=>{
+    [prefix,fName,lName,phoneNumber,gender,dob,citizenid,email,password,address,pin],((err,result)=>{
         if(err){
             console.log(err);
         }else{
