@@ -114,12 +114,12 @@ app.post('/account/check',(req,res)=>{
 
 
 
-app.post(`/transaction`,(req,res)=>{
+app.post(`/transaction/month`,(req,res)=>{
 
     const citizenId = req.body.citizenId
     const month = req.body.month	
     
-db.query("SELECT ba.citizenId,t.fromAccount,t.toAccount,t.value,t.`dateAndTime` FROM `transaction` t,`book-account`ba WHERE ba.`accountNum` = t.`fromAccount` AND ba.citizenId = '?' AND month(dateAndTime) = ?",
+db.query("SELECT ba.citizenId,t.fromAccount,t.toAccount,t.value,t.`dateAndTime` FROM `transaction` t,`book-account`ba WHERE ba.`accountNum` = t.`fromAccount` AND ba.citizenId = ? AND month(dateAndTime) = ?",
 [citizenId,month],(err,result)=>{
     if(err){
         console.log(err)
@@ -216,9 +216,23 @@ app.post(`/card/subscription`,(req,res)=>{
     })
 })
 
+app.post(`/check/product`,(req,res)=>{
+
+    const subProductId = req.body.subProductId
+    db.query("SELECT * FROM `subscription-product` WHERE subProductId = ?",
+    [subProductId],(err,result)=>{
+        if(err){
+            console.log(err)
+        }else{
+            res.send(result)
+        }
+    })
+})
+
+
 //----------------------------------------------------------------insert zone ----------------------------------------------------------
 
-app.post('/create',(req,res)=>{
+app.post('/register',(req,res)=>{
     const prefix = req.body.prefix;
     const fName = req.body.fName;
     const lName = req.body.lName;
@@ -272,8 +286,140 @@ app.post('/create/card',(req,res)=>{
     })
 })
 
+app.post('/create/transaction',(req,res)=>{
+    
+    const fromAccount = req.body.fromAccount
+    const toAccount = req.body.toAccount
+    const value = req.body.value
+    const note = req.body.note
+    const categoryId = req.body.categoryId
+    const transactionTypeId = req.body.transactionTypeId
+
+    db.query("INSERT INTO `transaction`(fromAccount,toAccount,value,note,categoryId,transactionTypeId) VALUES (?,?,?,?,?,?)",
+    [fromAccount,toAccount,value,note,categoryId,transactionTypeId],(err,result)=>{
+        if(err){
+            console.log(err)
+        }else{
+            res.send(result)
+        }
+    })
+})
+/*
+app.post('/create/transaction/card',(req,res)=>{
+    
+    const fromCreditCardId = req.body.fromCreditCardId
+    const value = req.body.value
+    const note = req.body.note
+    const categoryId = req.body.categoryId
+    const transactionTypeId = req.body.transactionTypeId
+    const 
+
+    db.query("INSERT INTO `credit-card-transaction`() VALUES (?,?,?,?,?,?)",
+    [],(err,result)=>{
+        if(err){
+            console.log(err)
+        }else{
+            res.send(result)
+        }
+    })
+})
+*/
+
+app.post('/create/customer/foreign/currencies',(req,res)=>{
+    
+    const citizenId = req.body.citizenId
+    const currencyId = req.body.currencyId
+    const balanceCurrency = req.body.balanceCurrency
+
+    db.query("INSERT INTO `customer's-foreign-currencies`(citizenId,currencyId,balanceCurrency) VALUES (?,?,?)",
+    [citizenId,currencyId,balanceCurrency],(err,result)=>{
+        if(err){
+            console.log(err)
+        }else{
+            res.send(result)
+        }
+    })
+})
+
+app.post('/create/transaction/currency',(req,res)=>{
+    const citizenId = req.body.citizenId
+    const fromCurrency = req.body.fromCurrency
+    const toCurrency = req.body.toCurrency
+    const value = req.body.value
+    const note = req.body.note
+    const rate = req.body.rate
+    const fee = req.body.fee
+    
+
+    db.query("INSERT INTO `currency-exchange-transaction`(citizenId,fromCurrency,toCurrency,value,note,rate,fee) VALUES (?,?,?,?,?,?,?)",
+    [citizenId,fromCurrency,toCurrency,value,note,rate,fee],(err,result)=>{
+        if(err){
+            console.log(err)
+        }else{
+            res.send(result)
+        }
+    })
+})
 
 
+app.post('/create/card/subscription',(req,res)=>{
+    
+    const cardId = req.body.cardId
+    const subProductId = req.body.subProductId
+
+    db.query("INSERT INTO `card-subscription`(cardId,subProductId) VALUES (?,?)",
+    [cardId,subProductId],(err,result)=>{
+        if(err){
+            console.log(err)
+        }else{
+            res.send(result)
+        }
+    })
+})
+
+app.post('/create/product',(req,res)=>{
+    
+    const subProductId = req.body.subProductId
+    const monthlyPay = req.body.monthlyPay
+    const productName = req.body.productName
+
+    db.query("INSERT INTO `subscription-product`(subProductId,monthlyPay,productName) VALUES (?,?,?)",
+    [subProductId,monthlyPay,productName],(err,result)=>{
+        if(err){
+            console.log(err)
+        }else{
+            res.send(result)
+        }
+    })
+})
+
+
+//------------------------------------update zone----------------------------------------------------
+
+app.put('/update/balance',(req,res)=>{
+    const accountNum = req.body.accountNum
+    const balance = req.body.balance
+    db.query("UPDATE `book-account` SET balance = ? WHERE accountNum = ?",[balance,accountNum],(err,result)=>{
+        if(err){
+            console.log(err)
+        }else{
+            res.send(result)
+        }
+    })
+})
+
+app.put('/update/currency/balance',(req,res)=>{
+    const citizenId = req.body.citizenId
+    const currencyId = req.body.currencyId
+    const balanceCurrency = req.body.balanceCurrency
+    db.query("UPDATE `customer's-foreign-currencies` SET balanceCurrency = ? WHERE citizenId = ? AND currencyId = ? ",[balanceCurrency,citizenId,currencyId],(err,result)=>{
+        if(err){
+            console.log(err)
+        }else{
+            res.send(result)
+        }
+    })
+})
 
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
