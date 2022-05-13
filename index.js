@@ -11,62 +11,7 @@ const cors = require('cors');
 app.use(cors());
 app.use(express.json());
 
-//app.set('view engine',`ejs`)
-/*app.use(session({
-    secret: "session-key",
-    resave: false,
-    saveUninitialized: false
-}))*/
-/*
-app.use(session({
-    secret:"testsession",
-    resave:true,
-    saveUninitialized:true 
-}))
-*/
 
-
-/*
-app.use(express.urlencoded({extended: true}))
-app.use(express.static(path.join(__dirname,'static')))
-*/
-/*
-const db = mysql.createConnection({
-    user: "root",
-    host: "localhost",
-    database: "angelbank"
-});
-
-
-app.get('/customer',(req, res) => {
-    db.query("SELECT * FROM citizen",(err,result) => {
-        if (err){
-           console.log(err);
-        }else{
-           res.send(result);
-        }
-    });
-});
-*/
-
-/*
-const db = mysql.createConnection({
-    user: "root",
-    host: "localhost",
-    database: "c10_OnlineBankingDB",
-    
-});
-*/
-
-/*
-    const db = mysql.createConnection({
-        user: "b619d601f59301",
-        host: "us-cdbr-east-05.cleardb.net",
-        database: "heroku_dde927264163b31",
-        password:"76bcefda"
-        
-    });
-*/
     var db_config = {
         user: "b619d601f59301",
         host: "us-cdbr-east-05.cleardb.net",
@@ -106,6 +51,10 @@ const db = mysql.createConnection({
     
 
 
+//-------------------------------------------------------- get zone -----------------------------------------------------------------------
+app.get(`/`,(req,res)=>{
+    res.send("home server")
+})
 
 
 
@@ -119,28 +68,10 @@ app.get('/customer',(req, res) => {
     });
 });
 
-app.post('/create',(req,res)=>{
-    const prefix = req.body.prefix;
-    const fName = req.body.fName;
-    const lName = req.body.lName;
-    const phoneNumber = req.body.phoneNumber;
-    const gender = req.body.gender;
-    const dob = req.body.dob;
-    const citizenid = req.body.citizenid;
-    const email = req.body.email;
-    const password = req.body.password;
-    const address = req.body.address;
-    const pin = req.body.pin;
-    db.query("INSERT INTO `customer-identification`(prefix,fName,lName,phoneNumber,gender,dob,citizenid,email,password,address,pin) VALUES(?,?,?,?,?,?,?,?,?,?,?)",
-    [prefix,fName,lName,phoneNumber,gender,dob,citizenid,email,password,address,pin],((err,result)=>{
-        if(err){
-            console.log(err);
-        }else{
-            res.send("Value inserted")
-        }
-    }));
-})
 
+
+
+//-------------------------------------------------------- view zone -----------------------------------------------------------------------
 
 app.post('/login',(req,res)=>{
     const email = req.body.email
@@ -156,13 +87,30 @@ app.post('/login',(req,res)=>{
 })
 
 
-app.get(`/`,(req,res)=>{
-    res.send("home server")
+app.post('/register/check',(req,res)=>{
+    const email = req.body.email
+    const citizenId = req.body.citizenId
+    db.query("SELECT *  FROM `customer-Identification` WHERE email = ? AND citizenId = ?",
+    [email,citizenId],((err,result)=>{
+        if(err){
+            console.log(err)
+        }else{
+            res.send(result)
+        }
+    }))
 })
 
-
-
-
+app.post('/account/check',(req,res)=>{
+    const accountNum = req.body.accountNum
+    db.query("SELECT Ci.fName,Ci.lName,Ba.accountNum,Ba.balance FROM `book-account`Ba,`customer-identification` Ci WHERE Ba.citizenId = Ci.citizenId AND Ba.accountNum = ?",
+    [accountNum], (err,result)=>{
+            if(err){
+                console.log(err)
+            }else{
+                res.send(result)
+            }
+    })
+})
 
 
 
@@ -178,8 +126,7 @@ db.query("SELECT ba.citizenId,t.fromAccount,t.toAccount,t.value,t.`dateAndTime` 
         }else {
         res.send(result)
         }
-})
-           
+    })       
 })
 
 
@@ -268,6 +215,69 @@ app.post(`/card/subscription`,(req,res)=>{
         }
     })
 })
+
+//----------------------------------------------------------------insert zone ----------------------------------------------------------
+
+app.post('/create',(req,res)=>{
+    const prefix = req.body.prefix;
+    const fName = req.body.fName;
+    const lName = req.body.lName;
+    const phoneNumber = req.body.phoneNumber;
+    const gender = req.body.gender;
+    const dob = req.body.dob;
+    const citizenid = req.body.citizenid;
+    const email = req.body.email;
+    const password = req.body.password;
+    const address = req.body.address;
+    const pin = req.body.pin;
+    const role = req.body.role
+    db.query("INSERT INTO `customer-identification`(prefix,fName,lName,phoneNumber,gender,dob,citizenid,email,password,address,pin,role) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
+    [prefix,fName,lName,phoneNumber,gender,dob,citizenid,email,password,address,pin,role],((err,result)=>{
+        if(err){
+            console.log(err);
+        }else{
+            res.send("Value inserted")
+        }
+    }));
+})
+
+
+
+
+app.post('/create/book',(req,res)=>{
+    
+    const citizenId = req.body.citizenId;
+    const accountNum =req.body.accountNum
+    
+
+    db.query("INSERT INTO `book-account`(citizenId,accountNum) VALUES (?,?)",[citizenId,accountNum],(err,result)=>{
+        if(err){
+            console.log(err)
+        }else{
+            res.send(result)
+        }
+    })
+})
+
+app.post('/create/card',(req,res)=>{
+    
+    const accountNum = req.body.accountNum
+    const cardId = req.body.cardId
+
+    db.query("INSERT INTO `customer-card`(cardId,accountNum) VALUES (?,?)",[cardId,accountNum],(err,result)=>{
+        if(err){
+            console.log(err)
+        }else{
+            res.send(result)
+        }
+    })
+})
+
+
+
+
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /*
 app.post('/getTotalCurrency',(req,res)=>{
     const citizenId = req.body.citizenId
@@ -352,3 +362,60 @@ const db = mysql.createConnection({
 */
 
 
+
+//app.set('view engine',`ejs`)
+/*app.use(session({
+    secret: "session-key",
+    resave: false,
+    saveUninitialized: false
+}))*/
+/*
+app.use(session({
+    secret:"testsession",
+    resave:true,
+    saveUninitialized:true 
+}))
+*/
+
+
+/*
+app.use(express.urlencoded({extended: true}))
+app.use(express.static(path.join(__dirname,'static')))
+*/
+/*
+const db = mysql.createConnection({
+    user: "root",
+    host: "localhost",
+    database: "angelbank"
+});
+
+
+app.get('/customer',(req, res) => {
+    db.query("SELECT * FROM citizen",(err,result) => {
+        if (err){
+           console.log(err);
+        }else{
+           res.send(result);
+        }
+    });
+});
+*/
+
+/*
+const db = mysql.createConnection({
+    user: "root",
+    host: "localhost",
+    database: "c10_OnlineBankingDB",
+    
+});
+*/
+
+/*
+    const db = mysql.createConnection({
+        user: "b619d601f59301",
+        host: "us-cdbr-east-05.cleardb.net",
+        database: "heroku_dde927264163b31",
+        password:"76bcefda"
+        
+    });
+*/
