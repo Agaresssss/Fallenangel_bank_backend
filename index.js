@@ -260,7 +260,7 @@ app.post('/check/card',(req,res)=>{
             }
     })
 })
-app.post(`/check/currency`)
+
 //----------------------------------------------------------------insert zone ----------------------------------------------------------
 
 app.post('/register',(req,res)=>{
@@ -427,6 +427,8 @@ app.post('/create/product',(req,res)=>{
 })
 
 
+
+
 //------------------------------------update zone----------------------------------------------------
 
 app.put('/update/balance',(req,res)=>{
@@ -466,6 +468,20 @@ app.put(`/update/card/currentlimit`,(req,res)=>{
             }
     })
 })
+
+app.put('/update/kyc',(req,res)=>{
+    const email = req.body.email
+    const password = req.body.password
+    db.query("UPDATE `customer-identification` SET kycStatus = 1 WHERE email = ? AND password = ?",
+    [email,password],(err,result)=>{
+        if(err){
+            console.log(err)
+        }else{
+            res.send(result)
+        }
+    })
+})
+//--------------------- delete zone------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /*

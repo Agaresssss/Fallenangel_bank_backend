@@ -136,37 +136,94 @@ const CurrencySwap = ()=>{
     const Currencies = ""
     const Currencies1 = ""
     const value = 0
-    Axios.get(`https://api.frankfurter.app/latest?amount=${amount}&from=${Currencies}&to=${Currencies1}`).then(
-        (res, err) => { 
-            if (err) {
-                console.log(err)
-            }else{
+     
                 value = res.data.rates[Currencies1]
-                Axios.put('/update/card/currentlimit',{
-                    cardId: cardId,
+                Axios.put('/update/currency/balance',{
+                    citizenId : citizenId,
                     currencyId: Currencies,
                     currentLimit : fromCurrenvalue - amount
                 }).then(()=>{
-                    Axios.put('/update/card/currentlimit',{
-                        cardId: cardId,
-                        currencyId : Currencies1,
-                        currentLimit : targetcurrency + amount
-                    }).then(()=>{
-                        Axios.post('/create/transaction/currency',{
-            
+
+                    if(Currencies1 in myaccount){
+                        Axios.put('/update/currency/balance',{
+                            citizenId : citizenId,
+                            currencyId : Currencies1,
+                            currentLimit : targetcurrency + amount
                         }).then(()=>{
-                            console.log("complete")
+                            Axios.post('/create/transaction/currency',{
+                                citizenId : citizenId,
+                                fromCurrency :fromCurrency,
+                                toCurrency : toCurrency,
+                                value :value,
+                                note : note,
+                                rate: rate,
+                                fee : fee
+                            }).then(()=>{
+                                console.log("complete")
+                            })
                         })
-                    })
-                })
-            }
-        
-        })
-    
+
+                    }else{
+                        Axios.post('/create/customer/foreign/currencies',{
+                            citizenId : citizenId,
+                            currencyId : Currencies1,
+                            currentLimit : targetcurrency + amount
+                        }).then(()=>{
+                            Axios.post('/create/transaction/currency',{
+                                citizenId : citizenId,
+                                fromCurrency :fromCurrency,
+                                toCurrency : toCurrency,
+                                value :value,
+                                note : note,
+                                rate: rate,
+                                fee : fee
+                            }).then(()=>{
+                                console.log("complete")
+                            })
+
+                        })
+
+                    }
+                     
+                })              
 }
 
 
+const subproduct = ()=>{
+    const newProduct = ""
+    Axios.post('/card/subscription`',{
+        cardId: cardId
+    }).then((response)=>{
+            if(newProduct in response.data){
+               console.log("You alraady haved.")
+            }else{
+                Axios.post("/create/card/subscription",{
+                    cardId : cardId,
+                    subProductId : subProductId
+                }).then(()=>{
+                    console.log("complete")
+                })
+            }
+    })
 
+}
 
+const addproduct = ()=>{
+    Axios.post('/check/product',{
+            subProductId : subProductId
+    }).then((response)=>{
+        if(response){
+            console.log("Item in database")
+        }else{
+            Axios.post('/create/product',{
+                subProductId : subProductId,
+                monthlyPay : monthlyPay,
+                productName : productName
+            }).then((response)=>{
+                    console.log("inserted")
+            })
+        }
+    })
+}
     
     
