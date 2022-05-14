@@ -250,7 +250,17 @@ app.post('/check/kyc',(req,res)=>{
     })
 })
 
-
+app.post('/check/card',(req,res)=>{
+    const cardId = req.body.cardId
+    db.query("SELECT cardId,currentLimit FROM `customer-card` WHERE cardId = ?",[cardId],(err,result)=>{
+            if(err){
+                console.log(err)
+            }else{
+                res.send(result)
+            }
+    })
+})
+app.post(`/check/currency`)
 //----------------------------------------------------------------insert zone ----------------------------------------------------------
 
 app.post('/register',(req,res)=>{
@@ -444,6 +454,18 @@ app.put('/update/currency/balance',(req,res)=>{
     })
 })
 
+app.put(`/update/card/currentlimit`,(req,res)=>{
+    const cardId = req.body.cardId
+    const currentLimit = req.body.currentLimit
+    db.query("UPDATE `customer-card` SET currentLimit = ? WHERE cardId = ?",
+    [currentLimit,cardId,currencyId],(err,result)=>{
+            if(err){
+                console.log(err)
+            }else{
+                res.send(result)
+            }
+    })
+})
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /*

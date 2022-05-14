@@ -1,10 +1,11 @@
 const  Axios  = require("axios")
+const { response } = require("express")
 
 
 const register = ()=>{
     Axios.post('https://fallenangel-bank-api.herokuapp.com/register/check',{
         email: email,
-        password: password
+        citizenId :citizenId
     }).then((response)=>{
         if(response){
             console.log("Already have account",response.data)
@@ -16,14 +17,14 @@ const register = ()=>{
                  phoneNumber: phoneNumber,
                  gender :gender,
                  dob : dob,
-                 citizenid :citizenid,
+                 citizenId :citizenId,
                  email :email,
                  password :password,
                  address :address,
                  pin :pin
             }).then(()=>{
                 Axios.post('https://fallenangel-bank-api.herokuapp.com/create/book',{
-                    citizenid :citizenid,
+                    citizenId :citizenId,
                     accountNum: newAccountNum
                 }).then(()=>{
                     Axios.post('https://fallenangel-bank-api.herokuapp.com/create/card',{
@@ -59,24 +60,113 @@ const transaction = () =>{
             Axios.put('/update/balance',{
                 accountNum: myaccount,
                 balance : mybalance  
-            })
-            Axios.put('/update/balance',{
-                accountNum: response.data.accountNum,
-                balance : targetbalance
-            })
-            Axios.post('/create/transaction',{
-                fromAccount : myaccount,
-                toAccount : TargetAccountNum,
-                value : value,
-                note : note,
-                categoryId : categoryId,
-                transactionTypeId : transactionTypeId
-
             }).then(()=>{
-                console.log("complete transfer")
+                Axios.put('/update/balance',{
+                    accountNum: response.data.accountNum,
+                    balance : targetbalance
+                }).then(()=>{
+                    Axios.post('/create/transaction',{
+                        fromAccount : myaccount,
+                        toAccount : TargetAccountNum,
+                        value : value,
+                        note : note,
+                        categoryId : categoryId,
+                        transactionTypeId : transactionTypeId
+                    }).then(()=>{
+                        console.log("complete transfer")
+                    })
+                })
             })
         }else{
             console.log("No account in database")
         }
     })
 }
+
+
+const creditTransaction = ()=>{
+        const newCurentlimit = currenLimit - value 
+    Axios.put('/update/card/currentlimit',{
+        cardId: cardId,
+        currenLimit: newCurentlimit
+    }).then((response)=>{
+            Axios.post('/create/transaction/card',{
+                fromCreditCardId: fromCreditCardId,
+                value: value,
+                note: note,
+                categoryId :categoryId,
+                transactionTypeId : transactionTypeId,
+                PaymentDueDate : PaymentDueDate,
+                InstallmentPlan: InstallmentPlan,
+                Interest: Interest
+            }).then(()=>{
+                console.log("complete credit transaction")
+            })
+    })
+}
+
+
+const cerrencytopup = ()=>{
+    const newbalance = myaccount.balance - value
+    Axios.put('/update/balance',{
+            accountNum: accountNum,
+            balance: newbalance
+    }).then(()=>{
+        Axios.post('/create/transaction',{
+            fromAccount : myaccount,
+            toAccount : TargetAccountNum,
+            value : value,
+            note : note,
+            categoryId : categoryId,
+            transactionTypeId : transactionTypeId
+        }).then(()=>{
+            Axios.post("/create/customer/foreign/currencies",{
+                citizenId: citizenId,
+                currencyId :currencyId,
+                balanceCurrency :balanceCurrency
+            }).then(()=>{
+                console.log("create currency exchange complete")
+            })
+        })
+    })
+}
+
+const CurrencySwap = ()=>{
+    const amount = 0
+    const Currencies = ""
+    const Currencies1 = ""
+    const value = 0
+    Axios.get(`https://api.frankfurter.app/latest?amount=${amount}&from=${Currencies}&to=${Currencies1}`).then(
+        (res, err) => { 
+            if (err) {
+                console.log(err)
+            }else{
+                value = res.data.rates[Currencies1]
+                Axios.put('/update/card/currentlimit',{
+                    cardId: cardId,
+                    currencyId: Currencies,
+                    currentLimit : fromCurrenvalue - amount
+                }).then(()=>{
+                    Axios.put('/update/card/currentlimit',{
+                        cardId: cardId,
+                        currencyId : Currencies1,
+                        currentLimit : targetcurrency + amount
+                    }).then(()=>{
+                        Axios.post('/create/transaction/currency',{
+            
+                        }).then(()=>{
+                            console.log("complete")
+                        })
+                    })
+                })
+            }
+        
+        })
+    
+}
+
+
+
+
+    
+    
