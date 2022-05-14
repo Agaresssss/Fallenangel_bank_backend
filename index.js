@@ -53,7 +53,9 @@ app.use(express.json());
 
 //-------------------------------------------------------- get zone -----------------------------------------------------------------------
 app.get(`/`,(req,res)=>{
-    res.send("home server")
+
+    const dict = "/login ไว้ใช้สำหรับดู login"
+    res.send(dict)
 })
 
 
@@ -244,7 +246,7 @@ app.post('/register',(req,res)=>{
     const password = req.body.password;
     const address = req.body.address;
     const pin = req.body.pin;
-    db.query("INSERT INTO `customer-identification`(prefix,fName,lName,phoneNumber,gender,dob,citizenid,email,password,address,pin,role) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
+    db.query("INSERT INTO `customer-identification`(prefix,fName,lName,phoneNumber,gender,dob,citizenid,email,password,address,pin) VALUES(?,?,?,?,?,?,?,?,?,?,?)",
     [prefix,fName,lName,phoneNumber,gender,dob,citizenid,email,password,address,pin],((err,result)=>{
         if(err){
             console.log(err);
@@ -304,7 +306,7 @@ app.post('/create/transaction',(req,res)=>{
         }
     })
 })
-/*
+
 app.post('/create/transaction/card',(req,res)=>{
     
     const fromCreditCardId = req.body.fromCreditCardId
@@ -312,10 +314,12 @@ app.post('/create/transaction/card',(req,res)=>{
     const note = req.body.note
     const categoryId = req.body.categoryId
     const transactionTypeId = req.body.transactionTypeId
-    const 
+    const PaymentDueDate = req.body.PaymentDueDate
+    const InstallmentPlan = req.body.InstallmentPlan 
+    const Interest = req.body.Interest
 
-    db.query("INSERT INTO `credit-card-transaction`() VALUES (?,?,?,?,?,?)",
-    [],(err,result)=>{
+    db.query("INSERT INTO `credit-card-transaction`(fromCreditCardId,value,note,categoryId,transactionTypeId,PaymentDueDate,InstallmentPlan,Interest) VALUES (?,?,?,?,?,?,?,?)",
+    [fromCreditCardId,value,note,categoryId,transactionTypeId,PaymentDueDate,InstallmentPlan,Interest],(err,result)=>{
         if(err){
             console.log(err)
         }else{
@@ -323,7 +327,7 @@ app.post('/create/transaction/card',(req,res)=>{
         }
     })
 })
-*/
+
 
 app.post('/create/customer/foreign/currencies',(req,res)=>{
     

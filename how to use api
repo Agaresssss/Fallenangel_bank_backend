@@ -1,0 +1,82 @@
+const  Axios  = require("axios")
+
+
+const register = ()=>{
+    Axios.post('https://fallenangel-bank-api.herokuapp.com/register/check',{
+        email: email,
+        password: password
+    }).then((response)=>{
+        if(response){
+            console.log("Already have account",response.data)
+        }else{
+            Axios.post('https://fallenangel-bank-api.herokuapp.com/register',{
+               prefix : prefix,
+                 fName : fName,
+                 lName : lName,
+                 phoneNumber: phoneNumber,
+                 gender :gender,
+                 dob : dob,
+                 citizenid :citizenid,
+                 email :email,
+                 password :password,
+                 address :address,
+                 pin :pin
+            }).then(()=>{
+                Axios.post('https://fallenangel-bank-api.herokuapp.com/create/book',{
+                    citizenid :citizenid,
+                    accountNum: newAccountNum
+                }).then(()=>{
+                    Axios.post('https://fallenangel-bank-api.herokuapp.com/create/card',{
+                        accountNum: newAccountNum,
+                        cardId : newCardId
+                    }).then(()=>{
+                        console.log("Register complete")
+                    })
+                })
+            })
+        }
+    })
+}
+
+
+const login = ()=>{
+    Axios.post('https://fallenangel-bank-api.herokuapp.com/login',{
+        email : email,
+        password : password
+    }).then((response)=>{
+        console.log(response.data)
+    })
+}
+
+
+const transaction = () =>{
+    Axios.post('/account/check',{
+        accountNum : TargetAccountNum
+    }).then((response)=>{
+        if(response){
+        const mybalance = myaccount.balance  - value
+        const targetbalance = response.data.balance + value
+            Axios.put('/update/balance',{
+                accountNum: myaccount,
+                balance : mybalance  
+            })
+            Axios.put('/update/balance',{
+                accountNum: response.data.accountNum,
+                balance : targetbalance
+            })
+            Axios.post('/create/transaction',{
+                fromAccount : myaccount,
+                toAccount : TargetAccountNum,
+                value : value,
+                note : note,
+                categoryId : categoryId,
+                transactionTypeId : transactionTypeId
+
+            }).then(()=>{
+                console.log("complete transfer")
+            })
+        }else{
+            console.log("No account in database")
+        }
+    })
+}
