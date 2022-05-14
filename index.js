@@ -241,13 +241,13 @@ app.post('/register',(req,res)=>{
     const phoneNumber = req.body.phoneNumber;
     const gender = req.body.gender;
     const dob = req.body.dob;
-    const citizenid = req.body.citizenid;
+    const citizenId = req.body.citizenId;
     const email = req.body.email;
     const password = req.body.password;
     const address = req.body.address;
     const pin = req.body.pin;
-    db.query("INSERT INTO `customer-identification`(prefix,fName,lName,phoneNumber,gender,dob,citizenid,email,password,address,pin) VALUES(?,?,?,?,?,?,?,?,?,?,?)",
-    [prefix,fName,lName,phoneNumber,gender,dob,citizenid,email,password,address,pin],((err,result)=>{
+    db.query("INSERT INTO `customer-identification`(prefix,fName,lName,phoneNumber,gender,dob,citizenId,email,password,address,pin) VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+    [prefix,fName,lName,phoneNumber,gender,dob,citizenId,email,password,address,pin],((err,result)=>{
         if(err){
             console.log(err);
         }else{
