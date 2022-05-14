@@ -9,7 +9,13 @@ const cors = require('cors');
 
 
 app.use(cors());
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "https://fallenangel-bank-api.herokuapp.com/"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
 app.use(express.json());
+
 
 
     var db_config = {
@@ -223,6 +229,19 @@ app.post(`/check/product`,(req,res)=>{
     const subProductId = req.body.subProductId
     db.query("SELECT * FROM `subscription-product` WHERE subProductId = ?",
     [subProductId],(err,result)=>{
+        if(err){
+            console.log(err)
+        }else{
+            res.send(result)
+        }
+    })
+})
+
+app.post('/check/kyc',(req,res)=>{
+    const email = req.body.email
+    const password = req.body.password
+    db.query("SELECT kycStatus FROM `customer-identification` WHERE email = ? AND password = ?",
+    [email,password],(err,result)=>{
         if(err){
             console.log(err)
         }else{
