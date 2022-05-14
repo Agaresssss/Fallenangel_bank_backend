@@ -458,7 +458,7 @@ app.put(`/update/card/currentlimit`,(req,res)=>{
     const cardId = req.body.cardId
     const currentLimit = req.body.currentLimit
     db.query("UPDATE `customer-card` SET currentLimit = ? WHERE cardId = ?",
-    [currentLimit,cardId,currencyId],(err,result)=>{
+    [currentLimit,cardId],(err,result)=>{
             if(err){
                 console.log(err)
             }else{
