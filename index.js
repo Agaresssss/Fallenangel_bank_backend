@@ -60,7 +60,7 @@ app.use(express.json());
 //-------------------------------------------------------- get zone -----------------------------------------------------------------------
 app.get(`/`,(req,res)=>{
 
-    const dict = "API Version 2"
+    const dict = "API Version 2 by Phuettipol. Member Phuettipol J. Peeraya K. Sittinon C.  Siriwat C."
     res.send(dict)
 })
 
@@ -180,7 +180,7 @@ app.post('/customer/currency/balance',(req,res)=>{
 
             const citizenId = req.body.citizenId
                 
-                db.query("SELECT DISTINCT t.transactionId,t.fromAccount,t.toAccount,t.value,t.dateAndTime,t.note FROM `customer-Identification` p,`book-Account` Ba,`transaction`t WHERE p.citizenId = Ba.citizenId AND Ba.accountNum = t.fromAccount OR Ba.accountNum = t.toAccount AND p.citizenId = ?",
+                db.query("SELECT DISTINCT t.transactionId,t.fromAccount,t.toAccount,t.value,t.dateAndTime,t.note FROM `customer-Identification` p,`book-Account` Ba,`transaction`t WHERE p.citizenId = Ba.citizenId AND (Ba.accountNum = t.fromAccount OR Ba.accountNum = t.toAccount) AND p.citizenId = ?",
                 [citizenId],(err,result)=>{
                     if(err){
                     console.log(err)
