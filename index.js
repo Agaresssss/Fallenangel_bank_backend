@@ -76,7 +76,15 @@ app.get('/customer',(req, res) => {
     });
 });
 
-
+app.get('/list/product',(req,res)=>{
+    db.query("SELECT * FROM `subscription-product`",(err,result)=>{
+        if(err){
+            console.log(err)
+        }else{
+            res.send(result)
+        }
+    })
+})
 
 
 //-------------------------------------------------------- view zone -----------------------------------------------------------------------
@@ -307,8 +315,8 @@ app.post('/create/card',(req,res)=>{
     
     const accountNum = req.body.accountNum
     const cardId = req.body.cardId
-
-    db.query("INSERT INTO `customer-card`(cardId,accountNum) VALUES (?,?)",[cardId,accountNum],(err,result)=>{
+    const cvv = Math.floor(Math.random() * (999 - 100 +1)) + 100
+    db.query("INSERT INTO `customer-card`(cardId,accountNum,cvv) VALUES (?,?,?)",[cardId,accountNum,cvv],(err,result)=>{
         if(err){
             console.log(err)
         }else{
@@ -472,6 +480,7 @@ app.put(`/update/card/currentlimit`,(req,res)=>{
 app.put('/update/kyc',(req,res)=>{
     const email = req.body.email
     const password = req.body.password
+
     db.query("UPDATE `customer-identification` SET kycStatus = 1 WHERE email = ? AND password = ?",
     [email,password],(err,result)=>{
         if(err){
@@ -483,7 +492,46 @@ app.put('/update/kyc',(req,res)=>{
 })
 //--------------------- delete zone------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------- Analytic report zone-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+app.get('/report/citizenId/account/currency',(req,res)=>{
+    db.query("SELECT Ci.citizenId, count(DISTINCT currencyId) as numberOfCurrency, count(DISTINCT accountNum) as numberOfAccount FROM `customer-identification` Ci LEFT JOIN `book-account` Ba ON Ba.citizenId = Ci.citizenId LEFT JOIN `customer's-foreign-currencies` Cc ON Cc.citizenId = Ci.citizenId GROUP BY Ci.citizenId;",
+    (err,result)=>{
+        if(err){
+            console.log(err)
+            
+        }else{
+            res.send(result)
+        }
+    })
+})
+
+app.post('/report/citizenid/spend/month',(req,res)=>{
+
+    const citizenId = req.body.citizenId
+    db.query("SELECT bc.accountNum,ct.category,sum(t.`value`) AS totalValue FROM `book-Account` bc, `category-Type` ct, `transaction` t WHERE bc.accountNum = t.fromAccount AND ct.categoryId = t.categoryId AND bc.citizenId = ? GROUP BY (ct.category) ORDER BY (totalValue) DESC",
+    [citizenId],(err,result)=>{
+        if(err){
+            console.log(err)
+            
+        }else{
+            res.send(result)
+        }
+    })
+})
+
+app.get('/report/admin/card/all-user/spend',(req,res)=>{
+    db.query("SELECT cc.cardId, sum(cct.`value`) as totalValue, ct.monthlyLimit, (sum(cct.`value`) / ct.monthlyLimit) * 100 AS percentToUse FROM `customer-card` cc, `credit-card-transaction` cct, `card-type` ct WHERE cc.cardId = cct.fromCreditCardId AND cc.cardTypeId = ct.cardTypeId GROUP BY (cc.cardId) ORDER BY(percentToUse) DESC",
+(err,result)=>{
+        if(err){
+            console.log(err)
+            
+        }else{
+            res.send(result)
+        }
+    }) 
+})
+///---------------------------------------------------------------------------------------------------------------------------------------------
 /*
 app.post('/getTotalCurrency',(req,res)=>{
     const citizenId = req.body.citizenId
