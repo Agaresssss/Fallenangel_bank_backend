@@ -223,6 +223,20 @@ app.post(`/transaction/card`,(req,res)=>{
         })
     })
 
+    app.post(`/transaction/swap`,(req,res)=>{
+
+        const citizenId= req.body.citizenId        
+        
+            db.query("SELECT Ct.transactionId,Ci.citizenId,Ct.fromCurrency,Ct.toCurrency,Ct.`value`,Ct.dateAndTime,Ct.rate,Ct.fee FROM `customer-Identification` Ci,`currency-exchange-transaction` Ct  WHERE Ci.citizenId = Ct.citizenId AND Ci.citizenId = ?",
+        [citizenId],(err,result)=>{
+                if(err){
+                console.log(err)
+                }else {
+                res.send(result)
+                }
+            })
+        })
+
 
 app.post(`/card/subscription`,(req,res)=>{
 
