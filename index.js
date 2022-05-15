@@ -531,6 +531,17 @@ app.get('/report/admin/card/all-user/spend',(req,res)=>{
         }
     }) 
 })
+
+app.get('/report/admin/totalbalance/currency',(req,res)=>{
+    db.query("SELECT cc.cardId,sum(cct.`value`) as totalValue,ct.monthlyLimit, (sum(cct.`value`) / ct.monthlyLimit) * 100 AS percentToUse FROM `customer-card` cc, `credit-card-transaction` cct, `card-type` ct WHERE cc.cardId = cct.fromCreditCardId AND cc.cardTypeId = ct.cardTypeId GROUP BY (cc.cardId) ORDER BY(percentToUse) DESC",
+(err,result)=>{
+        if(err){
+            console.log(err)
+        }else{
+            res.send(result)
+        }
+    })
+})
 ///---------------------------------------------------------------------------------------------------------------------------------------------
 /*
 app.post('/getTotalCurrency',(req,res)=>{
