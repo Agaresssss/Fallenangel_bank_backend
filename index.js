@@ -189,6 +189,10 @@ app.post('/customer/currency/balance',(req,res)=>{
                     }
                 })
             })
+
+
+
+            
             
 
 app.post(`/customer/card`,(req,res)=>{
@@ -209,7 +213,7 @@ app.post(`/transaction/card`,(req,res)=>{
 
     const cardId= req.body.cardId        
     
-        db.query("SELECT  Cc.cardId, T.toAccount, T.value, T.dateAndTime, T.note FROM `customer-Card` Cc,`book-Account` Ab,`credit-card-transaction` T WHERE Cc.cardId = T.fromCreditCardId AND T.toAccount = Ab.accountNum AND Cc.cardId = ?",
+        db.query("SELECT T.transactionId, Cc.cardId, T.toAccount, T.value, T.dateAndTime, T.note FROM `customer-Card` Cc,`book-Account` Ab,`credit-card-transaction` T WHERE Cc.cardId = T.fromCreditCardId AND T.toAccount = Ab.accountNum AND Cc.cardId = ?",
     [cardId],(err,result)=>{
             if(err){
             console.log(err)
