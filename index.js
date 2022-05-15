@@ -179,7 +179,7 @@ app.post('/customer/currency/balance',(req,res)=>{
 
             const citizenId = req.body.citizenId
                 
-                db.query("SELECT t.fromAccount,t.toAccount,t.value,t.dateAndTime,t.note FROM `customer-Identification` p,`book-Account` Ba,`transaction`t WHERE p.citizenId = Ba.citizenId AND Ba.accountNum = t.fromAccount AND p.citizenId = ?",
+                db.query("SELECT t.transactionId t.fromAccount,t.toAccount,t.value,t.dateAndTime,t.note FROM `customer-Identification` p,`book-Account` Ba,`transaction`t WHERE p.citizenId = Ba.citizenId AND Ba.accountNum = t.fromAccount AND p.citizenId = ?",
                 [citizenId],(err,result)=>{
                     if(err){
                     console.log(err)
