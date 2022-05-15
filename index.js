@@ -77,7 +77,7 @@ app.get('/customer',(req, res) => {
 });
 
 app.get('/list/product',(req,res)=>{
-    db.query("SELECT * FROM `subscription-product`",(err,result)=>{
+    db.query("SELECT  FROM `subscription-product`",(err,result)=>{
         if(err){
             console.log(err)
         }else{
@@ -478,11 +478,10 @@ app.put(`/update/card/currentlimit`,(req,res)=>{
 })
 
 app.put('/update/kyc',(req,res)=>{
-    const email = req.body.email
-    const password = req.body.password
-
-    db.query("UPDATE `customer-identification` SET kycStatus = 1 WHERE email = ? AND password = ?",
-    [email,password],(err,result)=>{
+    const citizenId = req.body.citizenId
+    
+    db.query("UPDATE `customer-identification` SET kycStatus = 1 WHERE citizenId = ?",
+    [citizenId],(err,result)=>{
         if(err){
             console.log(err)
         }else{
