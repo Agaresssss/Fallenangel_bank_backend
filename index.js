@@ -60,7 +60,7 @@ app.use(express.json());
 //-------------------------------------------------------- get zone -----------------------------------------------------------------------
 app.get(`/`,(req,res)=>{
 
-    const dict = "/login ไว้ใช้สำหรับดู login"
+    const dict = "API Version 2"
     res.send(dict)
 })
 
@@ -222,7 +222,7 @@ app.post(`/transaction/card`,(req,res)=>{
 app.post(`/card/subscription`,(req,res)=>{
 
     const cardId = req.body.cardId
-    db.query("SELECT Cc.cardId,Cp.productName,Cp.monthlyPay FROM `customer-Card` Cc,`card-Subscription` Cs,`subscription-Product` Cp WHERE Cc.cardId = Cs.cardId AND Cs.subProductId = Cp.subProductId AND Cc.cardId = ?",
+    db.query("SELECT Cp.subProductId,Cp.productName,Cp.monthlyPay FROM `customer-Card` Cc,`card-Subscription` Cs,`subscription-Product` Cp WHERE Cc.cardId = Cs.cardId AND Cs.subProductId = Cp.subProductId AND Cc.cardId = ?",
     [cardId],(err,result)=>{
         if(err){
             console.log(err)
