@@ -126,6 +126,7 @@ app.post('/account/check',(req,res)=>{
                 res.send(result)
             }
     })
+
 })
 
 
@@ -307,6 +308,14 @@ app.post('/create/book',(req,res)=>{
             console.log(err)
         }else{
             res.send(result)
+            db.query("INSERT INTO `transaction`(fromAccount,toAccount,value,note,categoryId,transactionTypeId) VALUES (?,?,?,?,?,?)",
+            [9999999999,accountNum,500,"Create book",10,5],(err1,result1)=>{
+                     if(err1){
+                         console.log(err)
+                    }else{
+                        res.send(result1)
+                    }
+            })
         }
     })
 })
@@ -321,6 +330,7 @@ app.post('/create/card',(req,res)=>{
             console.log(err)
         }else{
             res.send(result)
+            
         }
     })
 })
@@ -534,6 +544,17 @@ app.get('/report/admin/card/all-user/spend',(req,res)=>{
 app.get('/report/admin/totalbalance/currency',(req,res)=>{
     db.query("SELECT cc.cardId,sum(cct.`value`) as totalValue,ct.monthlyLimit, (sum(cct.`value`) / ct.monthlyLimit) * 100 AS percentToUse FROM `customer-card` cc, `credit-card-transaction` cct, `card-type` ct WHERE cc.cardId = cct.fromCreditCardId AND cc.cardTypeId = ct.cardTypeId GROUP BY (cc.cardId) ORDER BY(percentToUse) DESC",
 (err,result)=>{
+        if(err){
+            console.log(err)
+        }else{
+            res.send(result)
+        }
+    })
+})
+
+app.get('/report/income/spend/user',(req,res)=>{
+    db.query("SELECT Ci.citizenId, sum(T.`value`) +  sum(DISTINCT Ba.balance) AS `Income`,sum(T.`value`) as `Spend`, sum(DISTINCT Ba.balance) as `Difference` FROM `customer-identification` Ci LEFT JOIN `book-account` Ba ON Ba.citizenId = Ci.citizenId LEFT JOIN `transaction` T ON T.fromAccount = Ba.accountNum GROUP BY Ci.citizenId;",
+    (err,result)=>{
         if(err){
             console.log(err)
         }else{
