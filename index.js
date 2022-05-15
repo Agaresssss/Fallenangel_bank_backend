@@ -77,7 +77,7 @@ app.get('/customer',(req, res) => {
 });
 
 app.get('/list/product',(req,res)=>{
-    db.query("SELECT  FROM `subscription-product`",(err,result)=>{
+    db.query("SELECT * FROM `subscription-product`",(err,result)=>{
         if(err){
             console.log(err)
         }else{
