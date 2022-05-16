@@ -1,5 +1,5 @@
 const  Axios  = require("axios")
-const { response } = require("express")
+const { response, application } = require("express")
 
 
 const register = ()=>{
@@ -226,4 +226,69 @@ const addproduct = ()=>{
     })
 }
     
-    
+const setKyc = ()=>{
+    Axios.put("/update/kyc",{
+        email:email,
+        password:password
+    }).then((response)=>{
+        if(err){
+            console.log("fail")
+        }else{
+            console.log("Set complete")
+        }
+    })
+}
+
+const getkyc = ()=>{
+    Axios.post("/check/kyc",{
+        email:email,
+        password:password
+    }).then((response)=>{
+       console.log(response.data)
+    })
+
+}
+
+
+const report1 = ()=>{
+   Axios.get("https://fallenangel-bank-api.herokuapp.com/report/citizenId/account/currency").then((response)=>{
+       console.log(response.data)
+   }) 
+}
+
+const report2 = ()=>{
+    Axios.get("https://fallenangel-bank-api.herokuapp.com/report/admin/card/all-user/spend").then((response)=>{
+        console.log(response.data)
+    }) 
+ }
+
+ const report3 = ()=>{
+    Axios.get("https://fallenangel-bank-api.herokuapp.com/report/admin/totalbalance/currency").then((response)=>{
+        console.log(response.data)
+    }) 
+ }
+
+ const report4 = ()=>{
+    Axios.post("https://fallenangel-bank-api.herokuapp.com/report/citizenid/spend/month",{
+        citizenId:citizenId
+    }).then((response)=>{
+        console.log(response.data)
+    }) 
+ }
+
+
+ const report5 = ()=>{
+    Axios.get("https://fallenangel-bank-api.herokuapp.com/report/income/spend/user").then((response)=>{
+        console.log(response.data)
+    }) 
+ }
+
+
+ const transwap =()=>{
+     
+     Axios.post("https://fallenangel-bank-api.herokuapp.com//card/subscription",{
+            citizenId:citizenId
+     }).then((response)=>{
+
+     })
+ }
