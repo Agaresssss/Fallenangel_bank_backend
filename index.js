@@ -1,28 +1,22 @@
 const express = require('express');
 const app = express();
 const mysql = require('mysql');
-//const session = require('express-session')
-const path = require('path')
-
-
+const helmet = require('helmet');
 const cors = require('cors');
 
-
-app.use(cors());
-/*app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "https://fallenangel-bank-api.herokuapp.com/"); // update to match the domain you will make the request from
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-  });*/
-app.use(express.json());
+const router = require('./routes/index.js');
 
 
+app.use(cors()); // for parsing application/x-www-form-urlencoded
+app.use(express.json()); // for parsing application/json
+app.use(helmet()); // security
+app.disable('x-powered-by'); // security hide express version from header response  
+app.use('/', router);
 
     var db_config = {
-        user: "b619d601f59301",
-        host: "us-cdbr-east-05.cleardb.net",
-        database: "heroku_dde927264163b31",
-        password: "76bcefda",
+        user: "root",
+        host: "localhost",
+        database: "c10_onlinebankingdb",
       };
       
       var connection;
@@ -62,6 +56,7 @@ app.get(`/`,(req,res)=>{
 
     const dict = "API Version 2 by Phuettipol. Member Phuettipol J. Peeraya K. Sittinon C.  Siriwat C."
     res.send(dict)
+    
 })
 
 
